@@ -92,11 +92,13 @@ def show_person(
         max_length=255,
         title="person Name",
         description="This  is the person name. It must to be between 1 to 255 characters",
+        example = "maria"
         ),
     age: Optional[int] = Query(
-        ...,
-        title="person age",
-        description="This  is the person age. It's required must to be an integer"    
+            ...,
+            title="person age",
+            description="This  is the person age. It's required must to be an integer",
+            example=25
         )
 ):
     return {
@@ -109,7 +111,8 @@ def show_person(
         ..., 
         gt=0,
         title="person age",
-        description="This  is the person age. It's required must to be an integer"    
+        description="This  is the person age. It's required must to be an integer",
+        example=13
         )
 ):
     return {
