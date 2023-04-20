@@ -1,22 +1,76 @@
 from typing import Optional
+from enum import Enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, EmailStr
 
 from fastapi import FastAPI, Body, Query, Path
 
 app = FastAPI()
 
+class HairColor (Enum):
+    white = "white"
+    brown = "brown"
+    blonde = "blonde"
+    block = "block"
+    red = "red"
+
 class Location(BaseModel):
-    city: str
-    country: str
+    city: str = Field(
+        ...,
+        min_length=3,
+        example="Bogotá",
+    )
+    country: str =  Field(
+        ...,
+        min_length=3,
+        example="Colombia",
+    )
 
 class Person(BaseModel):
-    first_name: str
-    last_name: str
-    age: int
-    active: bool
-    hair_color: Optional[str] = None
-    is_married: Optional[bool] = None
+    first_name: str = Field(
+        ..., 
+        min_length=3,
+        max_length=255,
+        example="Pepito",
+        )
+    last_name: str = Field(
+        ..., 
+        min_length=3,
+        max_length=255,
+        example="Perez",
+        )
+    age: int = Field(
+        ...,
+        gt=3,
+        le=150,
+        example=40,
+    )
+    email: EmailStr = Field(
+        ..., 
+        example="pepito@saibher.com",
+    )
+    
+    active: bool = Field(
+        example=True,
+    )
+    
+    hair_color: Optional[HairColor] = Field(
+        default=None,
+        example="blonde",
+        )
+    is_married: Optional[bool] = Field(default=None)
+    # class Config:
+    #     schema_extra = {
+    #         "example" : {
+    #             "first_name": "Andres felipe",
+    #             "last_name" : "Rincón Gracia",
+    #             "age": 28,
+    #             "email" : "developer@saibher.com",
+    #             "active": True,
+    #             "hair_color": "blonde",
+    #             "is_married" : True,
+    #         }
+    #     }
 
 @app.get("/")
 def home():
