@@ -3,7 +3,7 @@ from enum import Enum
 
 from pydantic import BaseModel, Field, EmailStr
 
-from fastapi import FastAPI, Body, Query, Path
+from fastapi import FastAPI, Body, Query, Path, status
 
 app = FastAPI()
 
@@ -58,7 +58,13 @@ class Person(BaseModel):
         default=None,
         example="blonde",
         )
+    
     is_married: Optional[bool] = Field(default=None)
+    
+    password: str = Field(
+        ...,
+        min_length=8,
+    )
     # class Config:
     #     schema_extra = {
     #         "example" : {
@@ -72,19 +78,32 @@ class Person(BaseModel):
     #         }
     #     }
 
-@app.get("/")
+@app.get(
+    path = "/", 
+    status_code=status.HTTP_200_OK
+    )
 def home():
     return {
         "Hello":"world"
     }
     
     
-@app.post("/person/new")
-def create_person(person: Person = Body(...)):
+@app.post(
+    path = "/person/new", 
+    response_model=Person, 
+    response_model_exclude={'password'},
+    status_code=status.HTTP_201_CREATED
+    )
+def create_person(person: Person = Body(
+    ...
+    )):
     return person
 
 
-@app.get('/person/details')
+@app.get(
+    path ='/person/details',
+    status_code=status.HTTP_200_OK,
+    )
 def show_person(
     name: Optional[str] = Query(
         None, 
@@ -105,7 +124,10 @@ def show_person(
         name: age
         }
 
-@app.get('/person/detail/{person_id}')
+@app.get(
+    path = '/person/detail/{person_id}',
+    status_code=status.HTTP_200_OK
+    )
 def show_person(
     person_id: int = Path(
         ..., 
@@ -119,7 +141,10 @@ def show_person(
         person_id: "existed",
     }
     
-@app.put("/person/{person_id}")
+@app.put(
+    path = "/person/{person_id}",
+    status_code=status.HTTP_201_CREATED
+    )
 def update_person(
     person_id: int= Path(
         ...,
